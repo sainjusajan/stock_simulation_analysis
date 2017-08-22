@@ -118,8 +118,8 @@ def prediction(request):
     # mark_X_test_pd = pd.DataFrame(mark_y_test.reshape(mark_y_test.shape[1], -1), index=exam, columns=subject)
     stock_y_pred_html = stock_y_pred#.to_html()
     stock_X_test_html = stock_X_test#.to_html()
-    plt.plot(stock_y_pred)
-    plt.plot(stock_X_test)
+    # plt.plot(stock_y_pred)
+    # plt.plot(stock_X_test)
 
     context = {
         # 'MSE':MSE,
