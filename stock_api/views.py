@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .forms import UploadCsvFileForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from .models import StockData
 import csv
@@ -88,7 +88,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 def prediction(request):
     template = 'stock_api/prediction.html'
     # filtering company
-    qs = StockData.objects.filter(companyAbbr='RUT')  # RUSSELL 2000 INDEX(company name)
+    kun_company = request.GET.get('company_abbr')
+    qs = StockData.objects.filter(companyAbbr=kun_company)  # RUSSELL 2000 INDEX(company name)
     df = read_frame(qs)
     data = df['open']
     stock_data = np.array(data.values.reshape((len(data), 1)))
@@ -121,6 +122,11 @@ def prediction(request):
     # plt.plot(stock_y_pred)
     # plt.plot(stock_X_test)
 
+    print(stock_data[-1])
+    last_data = regr.predict(stock_data[-1])
+    print(last_data)
+    
+
     context = {
         # 'MSE':MSE,
         # 'RSQ':RSQ,
@@ -128,4 +134,5 @@ def prediction(request):
         'stock_y_pred_html': stock_y_pred_html,
         'stock_X_test_html': stock_X_test_html,
     }
-    return render(request, template, context)
+    # return render(request, template, context)
+    return JsonResponse({'tomorrow_predicted_value': last_data[0][0]})
